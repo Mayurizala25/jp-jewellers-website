@@ -29,10 +29,6 @@ const subcategoryData = [
   ["gold-earrings", "Earrings", "gold-jewellery", "/images/jewellery/gold/gold-hoop-earring.jpg", "Padma Petal Earrings", "A fictional petal-form earring concept for celebratory and traditional looks."],
   ["gold-bangles", "Bangles", "gold-jewellery", "/images/jewellery/gold/gold-bangles-wrist.jpg", "Mogra Line Bangles", "A fictional pair of bangles with a fine, repeating floral-line motif."],
   ["gold-rings", "Rings", "gold-jewellery", "/images/jewellery/gold/gold-rings-hand.jpg", "Kamal Bloom Ring", "A fictional ring concept shaped around a compact lotus-inspired bloom."],
-  ["silver-anklets", "Anklets", "silver-jewellery", "/images/jewellery/silver/silver-chain-anklet.jpg", "Payal Ghungroo Anklet", "A fictional anklet concept with delicate bell-inspired accents."],
-  ["silver-toe-rings", "Toe Rings", "silver-jewellery", "/images/jewellery/silver/silver-toe-ring.jpg", "Komal Motif Toe Rings", "A fictional pair of toe-ring concepts with a softly patterned surface."],
-  ["silver-chains", "Chains", "silver-jewellery", "/images/jewellery/silver/silver-chain.jpg", "Rajat Link Chain", "A fictional silver-toned chain concept with a neat, understated link pattern."],
-  ["silver-bracelets", "Bracelets", "silver-jewellery", "/images/jewellery/silver/silver-bracelet.jpg", "Chand Tara Bracelet", "A fictional bracelet concept with alternating star and moon-inspired motifs."],
   ["silver-pooja-gifts", "Pooja Gifts", "silver-jewellery", "/images/jewellery/silver/silver-pooja-vessel.jpg", "Shubh Aarambh Gift Keepsake", "A fictional pooja-gift keepsake concept presented as an editorial sample."],
 ];
 
@@ -67,10 +63,6 @@ const productImageAlt = {
   "gold-earrings": "Close-up photograph of a polished gold hoop earring, used as a visual reference for the fictional Padma Petal Earrings concept.",
   "gold-bangles": "Photograph of a woman's wrist wearing twisted gold-tone bangles, used as a visual reference for the fictional Mogra Line Bangles concept.",
   "gold-rings": "Photograph of a hand wearing two gold rings, used as a visual reference for the fictional Kamal Bloom Ring concept.",
-  "silver-anklets": "Close-up photograph of a polished silver curb-link chain on a black background, used as a visual reference for the fictional Payal Ghungroo Anklet concept.",
-  "silver-toe-rings": "Close-up photograph of a polished silver curb-link chain on a black background, used as a visual reference for the fictional Komal Motif Toe Rings concept.",
-  "silver-chains": "Close-up photograph of a polished silver curb-link chain on a black background, used as a visual reference for the fictional Rajat Link Chain concept.",
-  "silver-bracelets": "Close-up photograph of a polished silver curb-link chain on a black background, used as a visual reference for the fictional Chand Tara Bracelet concept.",
   "silver-pooja-gifts": "Close-up photograph of a polished silver chain on a black background, used as a visual reference for the fictional Shubh Aarambh Gift Keepsake concept.",
 };
 
@@ -112,10 +104,6 @@ const productDetails = {
   "gold-earrings": { material: "Gold-tone metal with petal-shaped enamel-style details", occasion: "Festive occasions", demoPrice: 16400 },
   "gold-bangles": { material: "Gold-tone metal with repeating floral details", occasion: "Festive and wedding celebrations", demoPrice: 26900 },
   "gold-rings": { material: "Gold-tone metal with a coloured glass-style accent", occasion: "Celebrations and gifting", demoPrice: 13200 },
-  "silver-anklets": { material: "Silver-tone metal with bell-inspired accents", occasion: "Festive and traditional styling", demoPrice: 9800 },
-  "silver-toe-rings": { material: "Silver-tone metal with a patterned finish", occasion: "Festive styling and gifting", demoPrice: 4200 },
-  "silver-chains": { material: "Silver-tone metal with a polished-look link pattern", occasion: "Everyday and occasion styling", demoPrice: 8600 },
-  "silver-bracelets": { material: "Silver-tone metal with moon-and-star-inspired details", occasion: "Celebrations and gifting", demoPrice: 7400 },
   "silver-pooja-gifts": { material: "Silver-tone metal with a keepsake-style motif", occasion: "Pooja and festive gifting", demoPrice: 11200 },
 };
 
