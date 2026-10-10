@@ -3,8 +3,9 @@
 - Inspect the existing project and relevant files before editing.
 - Make only the requested changes, preserve working functionality, and do not redesign unrelated sections or replace the project.
 - Avoid unnecessary files, folders, dependencies and duplicated components; keep components reusable and the project lightweight.
-- Use local sample product data and frontend state only. Do not add a backend, database or paid APIs.
+- Do not add fictional products, inventory, prices, commerce flows or local-only form previews.
 - Do not invent prices, certifications, offers, testimonials or business claims.
-- Treat supplied jewellery images and references as the source of truth.
+- Use business-approved product information and imagery only when explicitly supplied.
+- Direct product availability, selection and pricing enquiries to the supplied showroom contacts.
 - Maintain responsive mobile, tablet and desktop layouts.
 - After changes, test the relevant routes and interactions.

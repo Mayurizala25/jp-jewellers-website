@@ -9,6 +9,7 @@ const paths = {
   instagram: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5h.01" /></>,
   menu: <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>,
   minus: <path d="M5 12h14" />,
+  phone: <><path d="M4 5a2 2 0 0 1 2-2h2l2 5-2 1.5a15 15 0 0 0 6.5 6.5L16 14l5 2v2a2 2 0 0 1-2 2A17 17 0 0 1 4 5Z" /></>,
   pin: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
   plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
   search: <><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4.5 4.5" /></>,

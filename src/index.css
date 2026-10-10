@@ -718,3 +718,59 @@ main { min-height: 50vh; }
   .home-page .hero-actions { align-items: flex-start; flex-direction: column; }
   .home-page .values-strip > div { font-size: 7px; }
 }
+
+.contact-led-home {
+  width: min(100% - 64px, 1320px);
+  min-height: 570px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  align-items: center;
+  gap: clamp(40px, 8vw, 120px);
+  padding: 70px 4%;
+}
+.home-welcome { max-width: 620px; }
+.home-welcome .hero-title { font-size: clamp(62px, 8vw, 104px); line-height: .9; }
+.home-welcome .hero-description { max-width: 420px; }
+.home-showroom-card {
+  padding: clamp(26px, 4vw, 48px);
+  border: 1px solid #e5d8c5;
+  background: #f8f0e7;
+}
+.home-showroom-card h2 { margin: 0 0 14px; font: 500 31px/1.1 var(--serif); }
+.home-showroom-card > p:not(.eyebrow) { color: #74675d; font-size: 12px; line-height: 1.9; }
+.home-showroom-card .home-hours { margin: 23px 0; padding-top: 17px; border-top: 1px solid #e5d8c5; }
+.showroom-enquiry-card {
+  max-width: 800px;
+  padding: clamp(25px, 5vw, 52px);
+  border: 1px solid #e5d8c5;
+  background: #f8f0e7;
+}
+.showroom-enquiry-card > p { max-width: 610px; color: #74675d; font-size: 13px; line-height: 1.9; }
+.showroom-enquiry-card > p:first-child { color: var(--espresso); font: 500 26px/1.25 var(--serif); }
+.showroom-enquiry-actions, .about-contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; margin-top: 27px; }
+.about-contact-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 35px;
+  padding: clamp(25px, 5vw, 52px);
+  border: 1px solid #e5d8c5;
+  background: #f8f0e7;
+}
+.about-contact-block > div:first-child { max-width: 560px; }
+.about-contact-block > div:first-child > p:last-child { color: #74675d; font-size: 12px; line-height: 1.9; }
+.contact-details-only { display: block; max-width: 930px; }
+
+@media (max-width: 760px) {
+  .contact-led-home {
+    width: min(100% - 38px, 620px);
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding: 58px 0;
+  }
+  .home-welcome .hero-title { font-size: clamp(60px, 14vw, 86px); }
+  .about-contact-block { align-items: flex-start; flex-direction: column; }
+  .showroom-enquiry-actions, .about-contact-actions { align-items: flex-start; flex-direction: column; }
+}

@@ -7,21 +7,12 @@ const navigation = [
   { id: "categories", label: "Categories" },
   { id: "about", label: "About Us" },
   { id: "contact", label: "Contact Us" },
-  { id: "orders", label: "My Orders" },
 ];
 
-export default function SiteLayout({
-  currentPage,
-  children,
-  cartCount,
-  wishlistCount,
-  onOpenPanel,
-  onNavigate,
-}) {
+export default function SiteLayout({ currentPage, children }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  function navigate(id) {
-    onNavigate(id);
+  function navigate() {
     setMenuOpen(false);
   }
 
@@ -45,7 +36,7 @@ export default function SiteLayout({
             <Icon name={menuOpen ? "close" : "menu"} />
           </button>
 
-          <a aria-label="J P Jewellers home" className="brand-lockup" href="#home" onClick={() => navigate("home")}>
+          <a aria-label="J P Jewellers home" className="brand-lockup" href="#home" onClick={navigate}>
             <span className="brand-mark" aria-hidden="true">J<span>P</span></span>
             <span className="brand-name">J P <b>JEWELLERS</b></span>
           </a>
@@ -57,34 +48,13 @@ export default function SiteLayout({
                 className={currentPage === id ? "nav-link active" : "nav-link"}
                 href={`#${id}`}
                 key={id}
-                onClick={() => navigate(id)}
+                onClick={navigate}
               >
                 {label}
               </a>
             ))}
           </nav>
-
-          <div className="header-actions">
-            <button
-              aria-label={`Open wishlist, ${wishlistCount} saved items`}
-              className="icon-button action-with-count"
-              onClick={() => onOpenPanel("wishlist")}
-              type="button"
-            >
-              <Icon name="heart" />
-              {wishlistCount > 0 && <span className="action-count">{wishlistCount}</span>}
-            </button>
-            <button
-              aria-label={`Open shopping bag, ${cartCount} items`}
-              className="icon-button action-with-count"
-              onClick={() => onOpenPanel("cart")}
-              type="button"
-            >
-              <Icon name="bag" />
-              <span className="action-label">Bag</span>
-              {cartCount > 0 && <span className="action-count">{cartCount}</span>}
-            </button>
-          </div>
+          <span aria-hidden="true" />
         </div>
       </header>
 
@@ -93,11 +63,11 @@ export default function SiteLayout({
       <footer className="site-footer">
         <div className="footer-main">
           <div className="footer-brand">
-            <a className="brand-lockup footer-lockup" href="#home" onClick={() => navigate("home")}>
+            <a className="brand-lockup footer-lockup" href="#home" onClick={navigate}>
               <span className="brand-mark" aria-hidden="true">J<span>P</span></span>
               <span className="brand-name">J P <b>JEWELLERS</b></span>
             </a>
-            <p>Explore a clearly labelled jewellery concept and find the supplied showroom details in Rajkot.</p>
+            <p>For current jewellery information and availability, please contact the Rajkot showroom.</p>
             <a className="footer-social" href="https://www.instagram.com/jpjewellersrajkot/" rel="noreferrer" target="_blank">
               <Icon name="instagram" />
               <span>@jpjewellersrajkot</span>
@@ -108,7 +78,7 @@ export default function SiteLayout({
           <div className="footer-column">
             <h2>Explore</h2>
             {navigation.map(({ id, label }) => (
-              <a href={`#${id}`} key={id} onClick={() => navigate(id)}>{label}</a>
+              <a href={`#${id}`} key={id} onClick={navigate}>{label}</a>
             ))}
           </div>
 
@@ -129,7 +99,7 @@ export default function SiteLayout({
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} J P Jewellers · Rajkot, India</span>
-          <span>Personal adornment, thoughtfully considered.</span>
+          <span>For current details, contact the showroom.</span>
         </div>
       </footer>
     </div>
