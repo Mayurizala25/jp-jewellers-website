@@ -7,12 +7,21 @@ const navigation = [
   { id: "categories", label: "Categories" },
   { id: "about", label: "About Us" },
   { id: "contact", label: "Contact Us" },
+  { id: "orders", label: "My Orders" },
 ];
 
-export default function SiteLayout({ currentPage, children }) {
+export default function SiteLayout({
+  currentPage,
+  children,
+  cartCount,
+  wishlistCount,
+  onOpenPanel,
+  onNavigate,
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  function navigate() {
+  function navigate(id) {
+    onNavigate(id);
     setMenuOpen(false);
   }
 
@@ -36,7 +45,7 @@ export default function SiteLayout({ currentPage, children }) {
             <Icon name={menuOpen ? "close" : "menu"} />
           </button>
 
-          <a aria-label="J P Jewellers home" className="brand-lockup" href="#home" onClick={navigate}>
+          <a aria-label="J P Jewellers home" className="brand-lockup" href="#home" onClick={() => navigate("home")}>
             <span className="brand-mark" aria-hidden="true">J<span>P</span></span>
             <span className="brand-name">J P <b>JEWELLERS</b></span>
           </a>
@@ -48,13 +57,34 @@ export default function SiteLayout({ currentPage, children }) {
                 className={currentPage === id ? "nav-link active" : "nav-link"}
                 href={`#${id}`}
                 key={id}
-                onClick={navigate}
+                onClick={() => navigate(id)}
               >
                 {label}
               </a>
             ))}
           </nav>
-          <span aria-hidden="true" />
+
+          <div className="header-actions">
+            <button
+              aria-label={`Open wishlist, ${wishlistCount} saved items`}
+              className="icon-button action-with-count"
+              onClick={() => onOpenPanel("wishlist")}
+              type="button"
+            >
+              <Icon name="heart" />
+              {wishlistCount > 0 && <span className="action-count">{wishlistCount}</span>}
+            </button>
+            <button
+              aria-label={`Open shopping bag, ${cartCount} items`}
+              className="icon-button action-with-count"
+              onClick={() => onOpenPanel("cart")}
+              type="button"
+            >
+              <Icon name="bag" />
+              <span className="action-label">Bag</span>
+              {cartCount > 0 && <span className="action-count">{cartCount}</span>}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -63,11 +93,11 @@ export default function SiteLayout({ currentPage, children }) {
       <footer className="site-footer">
         <div className="footer-main">
           <div className="footer-brand">
-            <a className="brand-lockup footer-lockup" href="#home" onClick={navigate}>
+            <a className="brand-lockup footer-lockup" href="#home" onClick={() => navigate("home")}>
               <span className="brand-mark" aria-hidden="true">J<span>P</span></span>
               <span className="brand-name">J P <b>JEWELLERS</b></span>
             </a>
-            <p>For current jewellery information and availability, please contact the Rajkot showroom.</p>
+            <p>Explore a clearly labelled jewellery concept and find the supplied showroom details in Rajkot.</p>
             <a className="footer-social" href="https://www.instagram.com/jpjewellersrajkot/" rel="noreferrer" target="_blank">
               <Icon name="instagram" />
               <span>@jpjewellersrajkot</span>
@@ -78,7 +108,7 @@ export default function SiteLayout({ currentPage, children }) {
           <div className="footer-column">
             <h2>Explore</h2>
             {navigation.map(({ id, label }) => (
-              <a href={`#${id}`} key={id} onClick={navigate}>{label}</a>
+              <a href={`#${id}`} key={id} onClick={() => navigate(id)}>{label}</a>
             ))}
           </div>
 
@@ -99,7 +129,7 @@ export default function SiteLayout({ currentPage, children }) {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} J P Jewellers · Rajkot, India</span>
-          <span>For current details, contact the showroom.</span>
+          <span>Personal adornment, thoughtfully considered.</span>
         </div>
       </footer>
     </div>
