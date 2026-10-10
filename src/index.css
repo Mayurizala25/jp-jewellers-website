@@ -592,7 +592,8 @@ main { min-height: 50vh; }
   .footer-column > a, .footer-column > p { font-size: 9px; }
   .footer-bottom { min-height: 55px; align-items: flex-start; justify-content: center; flex-direction: column; gap: 5px; padding: 9px 0; font-size: 7px; }
   .modal-backdrop { padding: 12px; }
-  .product-dialog { max-height: calc(100vh - 24px); grid-template-columns: 1fr; }
+  .product-dialog { max-height: calc(100vh - 24px); grid-template-columns: 1fr; animation: fade-in .28s ease both; }
+  .dialog-close { position: fixed; top: 12px; right: 12px; }
   .dialog-gallery { gap: 9px; padding: 12px 12px 0; }
   .dialog-image { height: min(42vh, 330px); }
   .dialog-thumbnail { width: 55px; height: 59px; }
