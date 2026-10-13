@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon.jsx";
 import BrandedImage from "./BrandedImage.jsx";
 
@@ -12,82 +12,75 @@ export default function ShoppingPanel({
   onRemoveWishlist,
   onAddToCart,
   onOpenProduct,
-  onOrderComplete,
+  onSelectionSaved,
 }) {
+  const panelRef = useRef(null);
   const [stage, setStage] = useState("items");
-  const [customer, setCustomer] = useState({ fullName: "", mobile: "", address: "" });
-  const [formErrors, setFormErrors] = useState({});
-  const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [savedSelection, setSavedSelection] = useState(null);
 
   useEffect(() => {
     setStage("items");
-    setCustomer({ fullName: "", mobile: "", address: "" });
-    setFormErrors({});
-    setConfirmedOrder(null);
+    setSavedSelection(null);
   }, [mode]);
 
   useEffect(() => {
     if (!mode) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
+    const previouslyFocused = document.activeElement;
+    panelRef.current.querySelector(".panel-header button")?.focus();
+    return () => {
+      previouslyFocused instanceof HTMLElement && previouslyFocused.focus();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
   }, [mode, onClose]);
+
+  function handlePanelKeyDown(event) {
+    if (event.key === "Escape") {
+      onClose();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const controls = [...panelRef.current.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )];
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (event.shiftKey && (document.activeElement === first || !panelRef.current.contains(document.activeElement))) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !panelRef.current.contains(document.activeElement))) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
 
   if (!mode) return null;
   const isCart = mode === "cart";
   const items = isCart ? cartItems : wishlistItems;
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const demoSubtotal = cartItems.reduce((sum, { product, quantity }) => sum + product.demoPrice * quantity, 0);
+  const illustrativeSubtotal = cartItems.reduce((sum, { product, quantity }) => sum + product.illustrativePrice * quantity, 0);
   const formatPrice = (amount) => `₹${amount.toLocaleString("en-IN")}`;
-
-  function handleCustomerChange(event) {
-    const { name, value } = event.target;
-    setCustomer((details) => ({ ...details, [name]: value }));
-    setFormErrors((errors) => ({ ...errors, [name]: "" }));
-  }
 
   function handleCheckoutSubmit(event) {
     event.preventDefault();
-    const errors = {};
-    const fullName = customer.fullName.trim();
-    const address = customer.address.trim();
-    let mobile = customer.mobile.trim().replace(/[\s()-]/g, "");
-    if (mobile.startsWith("+91")) mobile = mobile.slice(3);
-    else if (mobile.startsWith("91") && mobile.length === 12) mobile = mobile.slice(2);
+    if (cartItems.length === 0) return;
 
-    if (!fullName) errors.fullName = "Please enter your full name.";
-    if (!/^[6-9]\d{9}$/.test(mobile)) errors.mobile = "Enter a valid 10-digit Indian mobile number.";
-    if (!address) errors.address = "Please enter your address.";
-    if (cartItems.length === 0) errors.cart = "Your bag is empty. Add a piece before confirming.";
-
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-
-    const orderId = `JP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-    const order = {
-      id: orderId,
-      orderId,
+    const selection = {
+      id: `JP-S-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
       createdAt: new Date().toISOString(),
       items: cartItems.map(({ product, quantity }) => ({
         id: product.id,
         name: product.name,
         category: product.category,
         quantity,
-        unitPrice: product.demoPrice,
-        lineTotal: product.demoPrice * quantity,
       })),
-      total: demoSubtotal,
     };
-    onOrderComplete(order);
-    setConfirmedOrder(order);
-    setStage("confirmed");
+    onSelectionSaved(selection);
+    setSavedSelection(selection);
+    setStage("saved");
   }
 
   return (
     <div className="panel-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <aside aria-label={isCart ? "Shopping bag" : "Wishlist"} aria-modal="true" className="shopping-panel" role="dialog">
+      <aside aria-label={isCart ? "Shopping bag" : "Wishlist"} aria-modal="true" className="shopping-panel" onKeyDown={handlePanelKeyDown} ref={panelRef} role="dialog">
         <div className="panel-header">
           <div>
             <p className="eyebrow">{isCart ? "YOUR SELECTION" : "SAVED FOR LATER"}</p>
@@ -98,88 +91,42 @@ export default function ShoppingPanel({
           </button>
         </div>
 
-        {stage === "confirmed" ? (
+        {stage === "saved" ? (
           <div className="checkout-confirmation">
             <span className="confirmation-mark"><Icon name="check" size={28} /></span>
-            <p className="eyebrow">DEMO ORDER CONFIRMED</p>
-            <h3>Your demo order is saved.</h3>
-            <p className="confirmation-order-id">Order ID · {confirmedOrder?.orderId}</p>
+            <p className="eyebrow">SELECTION SAVED</p>
+            <h3>Your selection is saved on this device.</h3>
+            <p className="confirmation-reference">Selection reference · {savedSelection?.id}</p>
             <div className="checkout-summary confirmation-summary">
-              {confirmedOrder?.items.map((item) => (
+              {savedSelection?.items.map((item) => (
                 <div className="checkout-summary-item" key={item.id}>
                   <span>{item.name} × {item.quantity}</span>
-                  <span>{formatPrice(item.lineTotal)}</span>
                 </div>
               ))}
-              <div className="checkout-summary-item"><strong>Illustrative demo total</strong><strong>{formatPrice(confirmedOrder?.total ?? 0)}</strong></div>
             </div>
-            <p>This record is stored only in this browser. No real order was placed, payment taken, or delivery arranged.</p>
+            <p>This selection has not been sent to the showroom. No order has been placed and no payment has been taken.</p>
             <button className="button button-dark" onClick={onClose} type="button">Continue exploring</button>
           </div>
         ) : stage === "checkout" ? (
           <div className="panel-checkout">
             <button className="back-link" onClick={() => setStage("items")} type="button">← Back to your bag</button>
-            <p className="eyebrow">FRONTEND DEMONSTRATION</p>
-            <h3>Demo checkout</h3>
-            <p>Enter your details to preview a demo order. No payment is collected.</p>
+            <p className="eyebrow">YOUR SELECTION</p>
+            <h3>Review your selection</h3>
+            <p>Save these pieces on this device, then contact the showroom to confirm details and current pricing.</p>
             <div className="checkout-summary">
               <span>{totalItems} {totalItems === 1 ? "piece" : "pieces"} selected</span>
               {cartItems.map(({ product, quantity }) => (
                 <div className="checkout-summary-item" key={product.id}>
                   <span>{product.name}</span>
-                  <span>{quantity} × {formatPrice(product.demoPrice)} = {formatPrice(product.demoPrice * quantity)}</span>
+                  <span>Quantity · {quantity} · Illustrative price · {formatPrice(product.illustrativePrice * quantity)}</span>
                 </div>
               ))}
-              <div className="checkout-summary-item"><strong>Illustrative demo total</strong><strong>{formatPrice(demoSubtotal)}</strong></div>
+              <div className="checkout-summary-item"><strong>Illustrative total</strong><strong>{formatPrice(illustrativeSubtotal)}</strong></div>
             </div>
-            <p className="shipping-note">Shipping, delivery, returns and current availability are not configured for this demo. Please confirm any real terms directly with the showroom.</p>
-            <form className="checkout-form" onSubmit={handleCheckoutSubmit} noValidate>
-              <label>
-                <span>Full Name</span>
-                <input
-                  autoComplete="name"
-                  aria-describedby={formErrors.fullName ? "checkout-name-error" : undefined}
-                  aria-invalid={Boolean(formErrors.fullName)}
-                  name="fullName"
-                  onChange={handleCustomerChange}
-                  required
-                  value={customer.fullName}
-                />
-                {formErrors.fullName && <span className="checkout-field-error" id="checkout-name-error">{formErrors.fullName}</span>}
-              </label>
-              <label>
-                <span>Mobile Number</span>
-                <input
-                  autoComplete="tel"
-                  aria-describedby={formErrors.mobile ? "checkout-mobile-error" : undefined}
-                  aria-invalid={Boolean(formErrors.mobile)}
-                  inputMode="tel"
-                  name="mobile"
-                  onChange={handleCustomerChange}
-                  placeholder="+91"
-                  required
-                  type="tel"
-                  value={customer.mobile}
-                />
-                {formErrors.mobile && <span className="checkout-field-error" id="checkout-mobile-error">{formErrors.mobile}</span>}
-              </label>
-              <label>
-                <span>Address</span>
-                <textarea
-                  autoComplete="street-address"
-                  aria-describedby={formErrors.address ? "checkout-address-error" : undefined}
-                  aria-invalid={Boolean(formErrors.address)}
-                  name="address"
-                  onChange={handleCustomerChange}
-                  required
-                  rows="3"
-                  value={customer.address}
-                />
-                {formErrors.address && <span className="checkout-field-error" id="checkout-address-error">{formErrors.address}</span>}
-              </label>
-              {formErrors.cart && <p className="checkout-field-error" role="alert">{formErrors.cart}</p>}
-              <button className="button button-dark full-width" type="submit">Confirm demo order</button>
-            </form>
+            <p className="shipping-note">Prices and products are fictional references, not offers. Saving does not submit an order or payment. No contact or delivery details are sent.</p>
+            <button className="button button-dark full-width" onClick={handleCheckoutSubmit} type="button">
+              Save selection on this device
+            </button>
           </div>
         ) : items.length === 0 ? (
           <div className="panel-empty">
@@ -199,7 +146,7 @@ export default function ShoppingPanel({
                   <div className="panel-item-info">
                     <span className="product-category">{product.category}</span>
                     <button className="panel-item-name" onClick={() => onOpenProduct(product)} type="button">{product.name}</button>
-                    <span className="panel-item-enquiry">{formatPrice(product.demoPrice)} · illustrative demo price</span>
+                    <span className="panel-item-enquiry">Illustrative price · {formatPrice(product.illustrativePrice)}</span>
                     {isCart ? (
                       <div className="quantity-control" aria-label={`Quantity for ${product.name}`}>
                         <button aria-label="Decrease quantity" onClick={() => onSetQuantity(product.id, quantity - 1)} type="button"><Icon name="minus" size={14} /></button>
@@ -225,12 +172,12 @@ export default function ShoppingPanel({
             </div>
             {isCart && (
               <div className="panel-bottom">
-                <p className="cart-subtotal"><span>Illustrative demo subtotal</span><strong>{formatPrice(demoSubtotal)}</strong></p>
-                <p>Demo prices only; no payment is collected. Confirm real product and delivery details with the showroom.</p>
+                <p className="cart-subtotal"><span>Illustrative subtotal</span><strong>{formatPrice(illustrativeSubtotal)}</strong></p>
+                <p>Products and prices are fictional references, not offers. Confirm actual product details, availability and pricing with the showroom.</p>
                 <button className="button button-dark full-width" onClick={() => setStage("checkout")} type="button">
-                  Continue to demo checkout <Icon name="arrow-right" />
+                  Review your selection <Icon name="arrow-right" />
                 </button>
-                <span className="demo-legal">DEMO ONLY · NO REAL ORDER OR PAYMENT</span>
+                <span className="selection-note">SAVED ON THIS DEVICE · NOT AN ORDER</span>
               </div>
             )}
           </>

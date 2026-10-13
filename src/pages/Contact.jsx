@@ -56,7 +56,7 @@ export default function Contact() {
         </div>
 
         <div className="contact-visual">
-          <BrandedImage alt="Temporary editorial jewellery image accompanying showroom information" loading="lazy" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85" />
+          <BrandedImage alt="Editorial photograph of a silver-tone bracelet against a dark background" loading="lazy" src="/images/jewellery/silver/silver-bracelet.jpg" />
           <div className="contact-visual-frame">
             <span className="eyebrow">J P JEWELLERS</span>
             <span className="contact-visual-title">A conversation<br /><em>begins here.</em></span>
@@ -77,9 +77,9 @@ export default function Contact() {
       </div>
       <section aria-labelledby="contact-enquiry-title" className="contact-enquiry">
         <div>
-          <p className="eyebrow">A FRONTEND-ONLY FORM PREVIEW</p>
+          <p className="eyebrow">CONTACT THE SHOWROOM</p>
           <h2 className="section-title" id="contact-enquiry-title">Send an <em>enquiry</em></h2>
-          <p>This demo form does not send or store your details. For a real enquiry, call or WhatsApp the showroom.</p>
+          <p>This form is not connected, so your details will not be sent or saved. Please call or WhatsApp the showroom to make an enquiry.</p>
         </div>
         <form className="enquiry-form" onSubmit={handleEnquirySubmit}>
           <label>
@@ -94,8 +94,8 @@ export default function Contact() {
             <span>How can we help?</span>
             <textarea name="message" required rows="4" />
           </label>
-          <button className="button button-dark" type="submit">Preview enquiry <Icon name="arrow-right" /></button>
-          {enquiryPreviewed && <p className="enquiry-feedback" role="status">Form preview complete. Nothing was sent. Please use the listed phone or WhatsApp details for a real enquiry.</p>}
+          <button className="button button-dark" type="submit">Check enquiry <Icon name="arrow-right" /></button>
+          {enquiryPreviewed && <p className="enquiry-feedback" role="status">Your details were not sent or saved. Please use the listed phone or WhatsApp details to contact the showroom.</p>}
         </form>
       </section>
     </div>

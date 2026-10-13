@@ -29,17 +29,14 @@ export default function Shop({
           product.category,
           product.parentCategory,
           product.description,
-          product.material,
-          product.occasion,
         ].join(" ").toLowerCase();
-        const words = searchableDetails.split(/[^a-z0-9]+/);
-        return searchTerms.every((term) => words.some((word) => word.startsWith(term)));
+        return searchTerms.every((term) => searchableDetails.includes(term));
       })
       .sort((first, second) => {
         if (sortBy === "name-asc") return first.name.localeCompare(second.name);
         if (sortBy === "name-desc") return second.name.localeCompare(first.name);
-        if (sortBy === "price-asc") return first.demoPrice - second.demoPrice;
-        if (sortBy === "price-desc") return second.demoPrice - first.demoPrice;
+        if (sortBy === "price-asc") return first.illustrativePrice - second.illustrativePrice;
+        if (sortBy === "price-desc") return second.illustrativePrice - first.illustrativePrice;
         return 0;
       });
   }, [activeCategory, searchTerm, sortBy]);
@@ -48,7 +45,7 @@ export default function Shop({
     <div className="page-container shop-page">
       <PageHeading
         eyebrow="THE J P JEWELLERS EDIT"
-        introduction="Explore fictional jewellery concepts with clearly labelled illustrative demo prices."
+        introduction="Explore fictional jewellery designs and illustrative prices. Contact the showroom to confirm actual product details, availability and current pricing."
         title="The collection"
       />
 
@@ -70,13 +67,13 @@ export default function Shop({
             <option value="featured">Curated order</option>
             <option value="name-asc">Name: A to Z</option>
             <option value="name-desc">Name: Z to A</option>
-            <option value="price-asc">Demo price: Low to high</option>
-            <option value="price-desc">Demo price: High to low</option>
+            <option value="price-asc">Illustrative price: Low to high</option>
+            <option value="price-desc">Illustrative price: High to low</option>
           </select>
         </label>
       </div>
 
-      <div aria-label="Filter by category" className="category-filter">
+      <div aria-label="Filter by category" className="category-filter" role="group">
         <button
           aria-pressed={!activeCategory}
           className={!activeCategory ? "filter-chip active" : "filter-chip"}
@@ -98,7 +95,7 @@ export default function Shop({
         ))}
       </div>
 
-      <div className="results-line">
+      <div aria-live="polite" className="results-line">
         <span>{visibleProducts.length} {visibleProducts.length === 1 ? "piece" : "pieces"} to explore</span>
         {(activeCategory || searchTerm) && (
           <button className="clear-filters" onClick={() => { setActiveCategory(""); setSearchTerm(""); }} type="button">
@@ -128,7 +125,7 @@ export default function Shop({
           <button className="button button-outline" onClick={() => { setActiveCategory(""); setSearchTerm(""); }} type="button">View all pieces</button>
         </div>
       )}
-      <p className="catalog-note">Products, material descriptions, imagery and prices are fictional demo content only. Demo prices are illustrative, not real offers; no payment is collected.</p>
+      <p className="catalog-note">Products, descriptions, images and prices are fictional design references only—not verified inventory or offers. Please contact the showroom for actual product details, availability and current pricing.</p>
     </div>
   );
 }

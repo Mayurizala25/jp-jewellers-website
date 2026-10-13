@@ -20,28 +20,28 @@ const pages = {
 };
 const pageMetadata = {
   home: {
-    title: "J P Jewellers | Rajkot Jewellery Edit",
-    description: "Explore a clearly labelled illustrative jewellery concept and find supplied J P Jewellers showroom contact details for Rajkot, India.",
+    title: "J P Jewellers | Rajkot",
+    description: "Browse fictional jewellery designs and illustrative prices. Confirm actual product details with the J P Jewellers Rajkot showroom.",
   },
   shop: {
-    title: "Shop Jewellery Concepts | J P Jewellers",
-    description: "Browse fictional jewellery concepts by category, search and filters. All product details and prices are illustrative demo content.",
+    title: "Jewellery Collection | J P Jewellers",
+    description: "Browse fictional jewellery designs and illustrative prices. Contact the showroom to confirm actual details and current pricing.",
   },
   categories: {
     title: "Jewellery Categories | J P Jewellers",
-    description: "Explore the illustrative Men, Women, Kids, Gold Jewellery and Silver Jewellery categories and their demo subcategories.",
+    description: "Explore Men, Women, Kids, Bridal, Gold Jewellery and Silver Jewellery categories.",
   },
   about: {
-    title: "About This Jewellery Concept | J P Jewellers",
-    description: "Learn about this independent J P Jewellers frontend concept and find supplied Rajkot showroom details. Editorial stories are fictional.",
+    title: "About J P Jewellers | Rajkot",
+    description: "Find J P Jewellers showroom contact details and explore jewellery design references.",
   },
   contact: {
     title: "Contact J P Jewellers | Rajkot Showroom",
     description: "View supplied J P Jewellers Rajkot showroom address, opening hours, phone and social contact links.",
   },
   orders: {
-    title: "My Orders | J P Jewellers Demo",
-    description: "View illustrative demo orders saved only in this browser. This page does not represent real orders or payments.",
+    title: "My Selections | J P Jewellers",
+    description: "View selections saved in this browser. Saved selections are not submitted orders.",
     robots: "noindex, nofollow",
   },
 };
@@ -123,7 +123,7 @@ function validateWishlist(value, key) {
 
 function validateOrders(value, key) {
   if (!Array.isArray(value)) {
-    console.warn(`Saved ${key} data is not a list. Starting with an empty order history.`);
+    console.warn(`Saved ${key} data is not a list. Starting with an empty selection history.`);
     return [];
   }
 
@@ -141,19 +141,22 @@ function validateOrders(value, key) {
       && typeof item.category === "string"
       && Number.isSafeInteger(item.quantity)
       && item.quantity > 0
-      && Number.isSafeInteger(item.unitPrice)
-      && item.unitPrice >= 0
-      && Number.isSafeInteger(item.lineTotal)
-      && item.lineTotal === item.unitPrice * item.quantity
     ))
-    && Number.isSafeInteger(order.total)
-    && order.total === order.items.reduce((sum, item) => sum + item.lineTotal, 0)
   ));
 
   if (validOrders.length !== value.length) {
     console.warn(`Ignored ${value.length - validOrders.length} invalid entry(s) in saved ${key} data.`);
   }
-  return validOrders;
+  return validOrders.map(({ id, createdAt, items }) => ({
+    id,
+    createdAt,
+    items: items.map(({ id: productId, name, category, quantity }) => ({
+      id: productId,
+      name,
+      category,
+      quantity,
+    })),
+  }));
 }
 
 export default function App() {
@@ -204,7 +207,7 @@ export default function App() {
     try {
       localStorage.setItem("jp-jewellers-orders", JSON.stringify(orders));
     } catch (error) {
-      console.warn("Your demo order history could not be saved in this browser.", error);
+      console.warn("Your saved selections could not be saved in this browser.", error);
     }
   }, [orders]);
 
@@ -253,8 +256,8 @@ export default function App() {
   );
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const Page = pages[currentPage];
-  const handleOrderComplete = useCallback((order) => {
-    setOrders((savedOrders) => [order, ...savedOrders]);
+  const handleSelectionSaved = useCallback((selection) => {
+    setOrders((savedSelections) => [selection, ...savedSelections]);
     setCart([]);
   }, []);
 
@@ -304,7 +307,7 @@ export default function App() {
           setPanelMode(null);
         }}
         onRemoveFromCart={removeFromCart}
-        onOrderComplete={handleOrderComplete}
+        onSelectionSaved={handleSelectionSaved}
         onRemoveWishlist={(productId) => setWishlist((items) => items.filter((id) => id !== productId))}
         onSetQuantity={setQuantity}
         wishlistItems={wishlistItems}

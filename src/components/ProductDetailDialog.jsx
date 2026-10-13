@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon.jsx";
 import BrandedImage from "./BrandedImage.jsx";
 
@@ -9,6 +9,7 @@ export default function ProductDetailDialog({
   onToggleWishlist,
   onAddToCart,
 }) {
+  const dialogRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -24,18 +25,38 @@ export default function ProductDetailDialog({
 
   useEffect(() => {
     if (!product) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
+    const previouslyFocused = document.activeElement;
+    dialogRef.current.querySelector(".dialog-close")?.focus();
+    return () => {
+      previouslyFocused instanceof HTMLElement && previouslyFocused.focus();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
   }, [product, onClose]);
+
+  function handleDialogKeyDown(event) {
+    if (event.key === "Escape") {
+      onClose();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const controls = [...dialogRef.current.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )];
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (event.shiftKey && (document.activeElement === first || !dialogRef.current.contains(document.activeElement))) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !dialogRef.current.contains(document.activeElement))) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
 
   if (!product) return null;
 
   return (
     <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section aria-label={`${product.name} details`} aria-modal="true" className="product-dialog" role="dialog">
+      <section aria-label={`${product.name} details`} aria-modal="true" className="product-dialog" onKeyDown={handleDialogKeyDown} ref={dialogRef} role="dialog">
         <button aria-label="Close product details" className="dialog-close icon-button" onClick={onClose} type="button">
           <Icon name="close" />
         </button>
@@ -43,7 +64,7 @@ export default function ProductDetailDialog({
           <div aria-live="polite" className="dialog-image">
             <BrandedImage
               alt={product.imageAlt}
-              fallbackLabel="Demo image unavailable"
+              fallbackLabel="Image unavailable"
               loadingFeedback
               src={activeImage}
             />
@@ -70,14 +91,14 @@ export default function ProductDetailDialog({
           <h2 className="display-heading">{product.name}</h2>
           <p className="dialog-copy">{product.description}</p>
           <dl className="dialog-details">
-            <div><dt>Concept materials</dt><dd>{product.material}</dd></div>
-            <div><dt>Suggested occasion</dt><dd>{product.occasion}</dd></div>
-            <div className="dialog-demo-price">
-              <dt>Fictional demo price</dt>
-              <dd>₹{product.demoPrice.toLocaleString("en-IN")}</dd>
+            <div><dt>Product details</dt><dd>Please contact the showroom to confirm materials and availability.</dd></div>
+            <div><dt>Availability</dt><dd>Please contact the showroom to confirm current availability.</dd></div>
+            <div className="dialog-pricing">
+              <dt>Illustrative price</dt>
+              <dd>₹{product.illustrativePrice.toLocaleString("en-IN")}</dd>
             </div>
           </dl>
-          <p className="sample-note">Fictional concept and illustrative demo price only. Not a real product offer; no payment is collected.</p>
+          <p className="sample-note">Products, descriptions, images and prices are fictional design references, not verified inventory or offers. Contact the showroom for actual product details and current pricing.</p>
           <div className="dialog-actions">
             <div aria-label="Choose quantity" className="quantity-control dialog-quantity">
               <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((count) => Math.max(1, count - 1))} type="button"><Icon name="minus" size={14} /></button>

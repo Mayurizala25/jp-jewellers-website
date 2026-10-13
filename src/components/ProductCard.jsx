@@ -29,16 +29,15 @@ export default function ProductCard({
         >
           <Icon name="heart" />
         </button>
-        <button className="quick-add" onClick={() => onAddToCart(product.id)} type="button">
-          <Icon name="bag" size={16} />
-          Add to bag
-        </button>
       </div>
       <button className="product-info" onClick={() => onOpen(product)} type="button">
         <span className="product-category">{product.category}</span>
         <span className="product-name">{product.name}</span>
-        <span className="product-description">{product.description.replace(/^Fictional demo concept:\s*/i, "")}</span>
-        <span className="product-enquiry">Illustrative demo price · ₹{product.demoPrice.toLocaleString("en-IN")} <Icon name="arrow-right" size={15} /></span>
+        <span className="product-description">{product.description.replace(/^Design reference:\s*/i, "")}</span>
+        <span className="product-enquiry">Illustrative price · ₹{product.illustrativePrice.toLocaleString("en-IN")}</span>
+      </button>
+      <button className="product-add-to-bag" onClick={() => onAddToCart(product.id)} type="button">
+        <Icon name="bag" size={15} /> Add to Bag
       </button>
     </article>
   );

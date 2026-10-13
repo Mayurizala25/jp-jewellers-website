@@ -21,7 +21,10 @@ export default function Categories({ onSelectCategory }) {
                 onClick={() => onSelectCategory(category.id)}
                 type="button"
               >
-                <span aria-hidden="true" className="category-mosaic">
+                <span
+                  aria-hidden="true"
+                  className={`category-mosaic category-mosaic-count-${Math.min(categorySubcategories.length, 3)}`}
+                >
                   {categorySubcategories.slice(0, 3).map((subcategory, imageIndex) => (
                     <BrandedImage
                       alt=""

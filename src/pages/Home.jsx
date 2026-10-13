@@ -1,55 +1,48 @@
 import Icon from "../components/Icon.jsx";
 import BrandedImage from "../components/BrandedImage.jsx";
 import ProductCard from "../components/ProductCard.jsx";
-import { categories, products } from "../data/products.js";
+import HeroSlider from "../components/HeroSlider.jsx";
+import { parentCategories, products } from "../data/products.js";
+
+const mapUrl = "https://www.google.com/maps/search/?api=1&query=J+P+Jewellers%2C+Palace+Road%2C+opposite+Ashapura+Temple%2C+Prahlad+Plot%2C+Panna+Manek%2C+Rajkot+360001%2C+Gujarat%2C+India";
+const whatsappUrl = "https://wa.me/919328591000?text=Hello%2C%20I%20would%20like%20to%20enquire%20with%20J%20P%20Jewellers.";
+
+const findProduct = (categoryId) => products.find((product) => product.categoryId === categoryId);
+
+const featuredProducts = [
+  findProduct("men-rings"),
+  findProduct("women-earrings"),
+  findProduct("women-bridal-jewellery"),
+  findProduct("kids-baby-jewellery"),
+].filter(Boolean);
 
 const instagramImages = [
-  products[1],
-  products[4],
-  products[7],
-  products[8],
-];
+  findProduct("women-earrings"),
+  findProduct("men-bracelets"),
+  findProduct("women-necklaces"),
+  findProduct("silver-pooja-gifts"),
+].filter(Boolean);
 
 export default function Home({ onAddToCart, onOpenProduct, onToggleWishlist, onSelectCategory, wishlist }) {
   return (
     <div className="home-page">
-      <section className="hero-section">
-        <div className="hero-copy">
-          <p className="eyebrow"><span className="eyebrow-rule" /> AN INDIAN JEWELLERY EDIT</p>
-          <h1 className="hero-title">The poetry of<br /><em>Indian adornment.</em></h1>
-          <p className="hero-description">
-            Explore an illustrative jewellery edit alongside supplied contact details for the J P Jewellers showroom in Rajkot.
-          </p>
-          <div className="hero-actions">
-            <a className="button button-dark" href="#shop" onClick={() => onSelectCategory("")}>Explore the collection <Icon name="arrow-right" /></a>
-            <a className="text-link" href="#categories">Discover the edit <Icon name="arrow-right" size={16} /></a>
-          </div>
-          <div className="hero-caption"><span>✳</span><span className="caption-line" /><span>ORNAMENT · RITUAL · MEMORY</span></div>
-        </div>
-        <div className="hero-visual">
-          <BrandedImage
-            alt="Fictional editorial image of traditional Indian jewellery"
-            fetchPriority="high"
-            loadingFeedback
-            src={categories[0].image}
-          />
-          <div className="hero-image-frame" aria-hidden="true" />
-          <div className="hero-stamp">
-            <span>J P</span>
-            <span>THE JEWELLERY EDIT</span>
-            <span className="stamp-dot">✳</span>
-            <span>INDIA</span>
-          </div>
-          <span className="hero-side-note">INSPIRED BY INDIAN CEREMONY</span>
-        </div>
-      </section>
+      <HeroSlider onSelectCategory={onSelectCategory} />
 
       <section aria-label="Showroom information" className="values-strip">
-        <div><span className="value-number">I</span><span>Rajkot showroom address</span></div>
+        <div>
+          <span className="value-number">I</span>
+          <a href={mapUrl} rel="noreferrer" target="_blank">Palace Road, opp. Ashapura Temple, Rajkot</a>
+        </div>
         <span className="values-divider" />
-        <div><span className="value-number">II</span><span>Published visiting hours</span></div>
+        <div>
+          <span className="value-number">II</span>
+          <span>Mon–Sat · 10 AM–7:30 PM</span>
+        </div>
         <span className="values-divider" />
-        <div><span className="value-number">III</span><span>Phone & WhatsApp enquiries</span></div>
+        <div>
+          <span className="value-number">III</span>
+          <a href="tel:+919328591000">+91 93285 91000</a>
+        </div>
       </section>
 
       <section className="section-block collection-section">
@@ -61,14 +54,14 @@ export default function Home({ onAddToCart, onOpenProduct, onToggleWishlist, onS
           <a className="text-link section-link" href="#categories">Explore all categories <Icon name="arrow-right" size={16} /></a>
         </div>
         <div className="collection-grid">
-          {categories.slice(0, 5).map((category, index) => (
+          {parentCategories.map((category, index) => (
             <button
               className={`collection-card collection-card-${index + 1}`}
               key={category.id}
-              onClick={() => onSelectCategory(category.name)}
+              onClick={() => onSelectCategory(category.id)}
               type="button"
             >
-              <BrandedImage alt={`Temporary editorial image for ${category.name} jewellery`} loading="lazy" src={category.image} />
+              <BrandedImage alt={`${category.name} jewellery`} loading="lazy" src={category.image} />
               <span className="collection-overlay" />
               <span className="collection-card-copy">
                 <span className="collection-index">0{index + 1} / COLLECTION</span>
@@ -80,16 +73,31 @@ export default function Home({ onAddToCart, onOpenProduct, onToggleWishlist, onS
         </div>
       </section>
 
+      <section aria-labelledby="visit-banner-title" className="home-visit-banner">
+        <div className="visit-banner-inner">
+          <p className="eyebrow">VISIT THE SHOWROOM</p>
+          <h2 className="section-title" id="visit-banner-title">Come see the <em>jewellery</em> in person.</h2>
+          <p className="visit-banner-copy">
+            Palace Road, opposite Ashapura Temple, Prahlad Plot / Panna Manek, Rajkot 360001, Gujarat.
+            Monday–Saturday, 10:00 AM–7:30 PM. Sunday closed.
+          </p>
+          <div className="visit-banner-actions">
+            <a className="button button-dark" href={mapUrl} rel="noreferrer" target="_blank">Get directions <Icon name="arrow-up-right" size={16} /></a>
+            <a className="button button-outline" href={whatsappUrl} rel="noreferrer" target="_blank">WhatsApp us <Icon name="arrow-up-right" size={16} /></a>
+          </div>
+        </div>
+      </section>
+
       <section className="section-block arrivals-section">
         <div className="section-heading-row">
           <div>
-            <p className="eyebrow">FICTIONAL DEMO PIECES</p>
+            <p className="eyebrow">A FEATURED SELECTION</p>
             <h2 className="section-title">Treasures for <em>the occasion</em></h2>
           </div>
           <a className="text-link section-link" href="#shop" onClick={() => onSelectCategory("")}>View the full selection <Icon name="arrow-right" size={16} /></a>
         </div>
         <div className="product-grid home-product-grid">
-          {products.slice(0, 4).map((product) => (
+          {featuredProducts.map((product) => (
             <ProductCard
               isWishlisted={wishlist.includes(product.id)}
               key={product.id}
@@ -104,16 +112,16 @@ export default function Home({ onAddToCart, onOpenProduct, onToggleWishlist, onS
 
       <section className="story-preview">
         <div className="story-preview-image">
-          <BrandedImage alt="Temporary close-up editorial jewellery image" loading="lazy" src={categories[5].image} />
-          <span>A FICTIONAL STUDY IN ADORNMENT</span>
+          <BrandedImage alt="A close-up editorial study of gold ring detailing, held between two fingers" loading="lazy" src={products[0].image} />
+          <span>A STUDY IN ADORNMENT</span>
         </div>
         <div className="story-preview-copy">
           <p className="eyebrow">ORNAMENT AS MEMORY</p>
           <h2 className="section-title">Worn for a moment.<br />Kept as a <em>memory.</em></h2>
           <p>
             Across generations, Indian adornment has accompanied celebration, self-expression and the rituals that
-            bring people together. This fictional visual edit takes inspiration from those occasions and the detail
-            that makes each expression personal.
+            bring people together. This visual edit takes inspiration from those occasions and the detail that
+            makes each expression personal.
           </p>
           <a className="button button-outline" href="#about">Discover the story <Icon name="arrow-right" /></a>
         </div>

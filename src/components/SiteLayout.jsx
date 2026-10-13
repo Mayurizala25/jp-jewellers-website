@@ -7,7 +7,7 @@ const navigation = [
   { id: "categories", label: "Categories" },
   { id: "about", label: "About Us" },
   { id: "contact", label: "Contact Us" },
-  { id: "orders", label: "My Orders" },
+  { id: "orders", label: "My Selections" },
 ];
 
 export default function SiteLayout({
@@ -28,9 +28,17 @@ export default function SiteLayout({
   return (
     <div className="site-shell min-h-screen bg-ivory text-espresso">
       <div className="announcement-bar">
-        <span>AN EXPRESSION OF INDIAN ADORNMENT</span>
-        <span className="announcement-divider" aria-hidden="true" />
-        <a href="#contact">VISIT OUR RAJKOT SHOWROOM</a>
+        <span className="announcement-tagline">J P Jewellers · Rajkot</span>
+        <div className="announcement-contact">
+          <a href="tel:+912812227122"><Icon name="phone" size={11} /> +91 281 222 7122</a>
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=J+P+Jewellers%2C+Palace+Road%2C+opposite+Ashapura+Temple%2C+Prahlad+Plot%2C+Panna+Manek%2C+Rajkot+360001%2C+Gujarat%2C+India"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Icon name="pin" size={11} /> Palace Road, Rajkot
+          </a>
+        </div>
       </div>
 
       <header className="site-header">
@@ -65,6 +73,9 @@ export default function SiteLayout({
           </nav>
 
           <div className="header-actions">
+            <a aria-label="Search the collection" className="icon-button header-search" href="#shop" onClick={() => navigate("shop")}>
+              <Icon name="search" />
+            </a>
             <button
               aria-label={`Open wishlist, ${wishlistCount} saved items`}
               className="icon-button action-with-count"
@@ -97,7 +108,7 @@ export default function SiteLayout({
               <span className="brand-mark" aria-hidden="true">J<span>P</span></span>
               <span className="brand-name">J P <b>JEWELLERS</b></span>
             </a>
-            <p>Explore a clearly labelled jewellery concept and find the supplied showroom details in Rajkot.</p>
+            <p>Browse fictional jewellery designs and illustrative prices, then confirm actual product details with the showroom.</p>
             <a className="footer-social" href="https://www.instagram.com/jpjewellersrajkot/" rel="noreferrer" target="_blank">
               <Icon name="instagram" />
               <span>@jpjewellersrajkot</span>
@@ -131,6 +142,7 @@ export default function SiteLayout({
           <span>© {new Date().getFullYear()} J P Jewellers · Rajkot, India</span>
           <span>Personal adornment, thoughtfully considered.</span>
         </div>
+        <p className="site-disclaimer">Product names, descriptions, imagery and prices are fictional design references only—not verified inventory or offers. The bag, saved selections and contact form operate only in this browser; no order, payment or enquiry is submitted.</p>
       </footer>
     </div>
   );
