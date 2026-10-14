@@ -10,16 +10,16 @@ A jewellery browsing website for J P Jewellers in Rajkot, India. It is not an of
 
 ## Pages
 
-The site has five main pages and a saved-selections page:
+The site has six main pages:
 
 1. Home
 2. Shop
 3. Categories
 4. About Us
 5. Contact Us
-6. My Selections (saved in this browser)
+6. My Orders (saved in this browser)
 
-Product details, wishlist, cart and selection saving are supporting experiences, not additional main pages.
+Product details, wishlist, cart and order saving are supporting experiences, not additional main pages.
 
 ## Design direction
 
@@ -37,10 +37,10 @@ The website uses local product reference data and browser state. It has no backe
 
 - Browse products and categories; view product details.
 - Add and remove items from a wishlist and cart, and update cart quantities.
-- Save a selection in this browser without submitting an order or payment.
-- Navigate the five main pages and view the supplied contact details.
+- Save order details in this browser without submitting an order or payment.
+- Navigate the six main pages and view the supplied contact details.
 
-The frontend includes jewellery design references, search and category filtering, a wishlist, a shopping bag, quantity controls, and browser-local saved selections. Saved selections and Contact form entries are not submitted to a service; no real orders, payments, emails, delivery, or tracking are supported. Product details, availability and current prices must be confirmed with the showroom.
+The frontend includes jewellery design references, search and category filtering, a wishlist, a shopping bag, quantity controls, and browser-local order details. Saved order details and Contact form entries are not submitted to a service; no real orders, payments, emails, delivery, or tracking are supported. Product details, availability and current prices must be confirmed with the showroom.
 
 Shipping, delivery, return, and availability terms are not configured. Confirm real terms directly with the showroom.
 

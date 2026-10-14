@@ -17,10 +17,24 @@ export default function ShoppingPanel({
   const panelRef = useRef(null);
   const [stage, setStage] = useState("items");
   const [savedSelection, setSavedSelection] = useState(null);
+  const [customer, setCustomer] = useState({
+    fullName: "",
+    mobile: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    pinCode: "",
+  });
+  const [touched, setTouched] = useState({});
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     setStage("items");
     setSavedSelection(null);
+    setCustomer({ fullName: "", mobile: "", email: "", address: "", city: "", state: "", pinCode: "" });
+    setTouched({});
+    setSubmitted(false);
   }, [mode]);
 
   useEffect(() => {
@@ -63,20 +77,55 @@ export default function ShoppingPanel({
     event.preventDefault();
     if (cartItems.length === 0) return;
 
+    setSubmitted(true);
+    setTouched(Object.fromEntries(Object.keys(customer).map((field) => [field, true])));
+    const errors = validateCustomer(customer);
+    if (Object.keys(errors).length > 0) return;
+
     const selection = {
       id: `JP-S-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
       createdAt: new Date().toISOString(),
+      customer,
       items: cartItems.map(({ product, quantity }) => ({
         id: product.id,
         name: product.name,
         category: product.category,
         quantity,
       })),
+      total: illustrativeSubtotal,
+      paymentStatus: "Not processed",
     };
     onSelectionSaved(selection);
     setSavedSelection(selection);
     setStage("saved");
   }
+
+  function validateCustomer(values) {
+    const errors = {};
+    if (!values.fullName.trim()) errors.fullName = "Full name is required.";
+    if (!/^[6-9]\d{9}$/.test(values.mobile)) errors.mobile = "Enter a valid 10-digit Indian mobile number.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Enter a valid email address.";
+    if (!values.address.trim()) errors.address = "Full address is required.";
+    if (!values.city.trim()) errors.city = "City is required.";
+    if (!values.state.trim()) errors.state = "State is required.";
+    if (!/^[1-9]\d{5}$/.test(values.pinCode)) errors.pinCode = "Enter a valid 6-digit PIN code.";
+    return errors;
+  }
+
+  function updateCustomer(field, value) {
+    setCustomer((values) => ({ ...values, [field]: value }));
+  }
+
+  const customerErrors = validateCustomer(customer);
+  const showError = (field) => (touched[field] || submitted) ? customerErrors[field] : "";
+  const fields = [
+    ["fullName", "Full name", "text", "Your full name", "fullName"],
+    ["mobile", "Mobile number", "tel", "10-digit Indian mobile number", "mobile"],
+    ["email", "Email address", "email", "you@example.com", "email"],
+    ["city", "City", "text", "Rajkot", "city"],
+    ["state", "State", "text", "Gujarat", "state"],
+    ["pinCode", "PIN code", "text", "6-digit PIN code", "pinCode"],
+  ];
 
   return (
     <div className="panel-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -94,9 +143,9 @@ export default function ShoppingPanel({
         {stage === "saved" ? (
           <div className="checkout-confirmation">
             <span className="confirmation-mark"><Icon name="check" size={28} /></span>
-            <p className="eyebrow">SELECTION SAVED</p>
-            <h3>Your selection is saved on this device.</h3>
-            <p className="confirmation-reference">Selection reference · {savedSelection?.id}</p>
+            <p className="eyebrow">ORDER DETAILS SAVED</p>
+            <h3>Your order details are saved.</h3>
+            <p className="confirmation-reference">Order reference · {savedSelection?.id}</p>
             <div className="checkout-summary confirmation-summary">
               {savedSelection?.items.map((item) => (
                 <div className="checkout-summary-item" key={item.id}>
@@ -104,29 +153,68 @@ export default function ShoppingPanel({
                 </div>
               ))}
             </div>
-            <p>This selection has not been sent to the showroom. No order has been placed and no payment has been taken.</p>
+            <p>Your details and order summary were saved locally on this device. No payment was taken and nothing was sent to the showroom.</p>
             <button className="button button-dark" onClick={onClose} type="button">Continue exploring</button>
           </div>
         ) : stage === "checkout" ? (
           <div className="panel-checkout">
             <button className="back-link" onClick={() => setStage("items")} type="button">← Back to your bag</button>
-            <p className="eyebrow">YOUR SELECTION</p>
-            <h3>Review your selection</h3>
-            <p>Save these pieces on this device, then contact the showroom to confirm details and current pricing.</p>
-            <div className="checkout-summary">
-              <span>{totalItems} {totalItems === 1 ? "piece" : "pieces"} selected</span>
-              {cartItems.map(({ product, quantity }) => (
-                <div className="checkout-summary-item" key={product.id}>
-                  <span>{product.name}</span>
-                  <span>Quantity · {quantity} · Illustrative price · {formatPrice(product.illustrativePrice * quantity)}</span>
-                </div>
-              ))}
-              <div className="checkout-summary-item"><strong>Illustrative total</strong><strong>{formatPrice(illustrativeSubtotal)}</strong></div>
-            </div>
-            <p className="shipping-note">Prices and products are fictional references, not offers. Saving does not submit an order or payment. No contact or delivery details are sent.</p>
-            <button className="button button-dark full-width" onClick={handleCheckoutSubmit} type="button">
-              Save selection on this device
-            </button>
+            <p className="eyebrow">CHECKOUT</p>
+            <h3>Complete your details</h3>
+            <p>Enter your details to save your order summary on this device. No payment or real order is submitted.</p>
+            <form className="checkout-form" onSubmit={handleCheckoutSubmit} noValidate>
+              <div className="checkout-fields">
+                {fields.map(([field, label, type, placeholder, id]) => {
+                  const error = showError(field);
+                  return (
+                    <label className={`checkout-field checkout-field-${field}`} htmlFor={id} key={field}>
+                      <span>{label}<b aria-hidden="true">*</b></span>
+                      <input
+                        aria-describedby={error ? `${id}-error` : undefined}
+                        aria-invalid={Boolean(error)}
+                        id={id}
+                        inputMode={field === "mobile" || field === "pinCode" ? "numeric" : undefined}
+                        maxLength={field === "mobile" ? 10 : field === "pinCode" ? 6 : undefined}
+                        onBlur={() => setTouched((values) => ({ ...values, [field]: true }))}
+                        onChange={(event) => updateCustomer(field, event.target.value)}
+                        placeholder={placeholder}
+                        type={type}
+                        value={customer[field]}
+                      />
+                      {error && <small id={`${id}-error`}>{error}</small>}
+                    </label>
+                  );
+                })}
+                <label className="checkout-field checkout-field-address" htmlFor="address">
+                  <span>Full address<b aria-hidden="true">*</b></span>
+                  <textarea
+                    aria-describedby={showError("address") ? "address-error" : undefined}
+                    aria-invalid={Boolean(showError("address"))}
+                    id="address"
+                    onBlur={() => setTouched((values) => ({ ...values, address: true }))}
+                    onChange={(event) => updateCustomer("address", event.target.value)}
+                    placeholder="House / building, street and area"
+                    rows="3"
+                    value={customer.address}
+                  />
+                  {showError("address") && <small id="address-error">{showError("address")}</small>}
+                </label>
+              </div>
+              <div className="checkout-summary">
+                <span>{totalItems} {totalItems === 1 ? "item" : "items"} in your order</span>
+                {cartItems.map(({ product, quantity }) => (
+                  <div className="checkout-summary-item" key={product.id}>
+                    <span>{product.name} × {quantity}</span>
+                    <strong>{formatPrice(product.illustrativePrice * quantity)}</strong>
+                  </div>
+                ))}
+                <div className="checkout-summary-item checkout-total"><strong>Order total</strong><strong>{formatPrice(illustrativeSubtotal)}</strong></div>
+              </div>
+              <p className="shipping-note">Payment is not processed, and no order or delivery request is sent to the showroom.</p>
+              <button className="button button-dark full-width" type="submit">
+                Save Order Details
+              </button>
+            </form>
           </div>
         ) : items.length === 0 ? (
           <div className="panel-empty">

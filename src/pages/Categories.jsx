@@ -1,7 +1,7 @@
 import Icon from "../components/Icon.jsx";
 import BrandedImage from "../components/BrandedImage.jsx";
 import PageHeading from "../components/PageHeading.jsx";
-import { parentCategories, subcategories } from "../data/products.js";
+import { parentCategories } from "../data/products.js";
 
 export default function Categories({ onSelectCategory }) {
   return (
@@ -13,53 +13,21 @@ export default function Categories({ onSelectCategory }) {
       />
       <div className="category-card-grid">
         {parentCategories.map((category, index) => {
-          const categorySubcategories = subcategories.filter((subcategory) => subcategory.parentCategoryId === category.id);
           return (
-            <section className="category-group" key={category.id}>
-              <button
-                className="category-card"
-                onClick={() => onSelectCategory(category.id)}
-                type="button"
-              >
-                <span
-                  aria-hidden="true"
-                  className={`category-mosaic category-mosaic-count-${Math.min(categorySubcategories.length, 3)}`}
-                >
-                  {categorySubcategories.slice(0, 3).map((subcategory, imageIndex) => (
-                    <BrandedImage
-                      alt=""
-                      className={`category-mosaic-image category-mosaic-image-${imageIndex + 1}`}
-                      fallbackLabel=""
-                      key={subcategory.id}
-                      loading="lazy"
-                      src={subcategory.image}
-                    />
-                  ))}
-                </span>
-                <span className="category-card-shade" />
-                <span className="category-card-number">0{index + 1}</span>
-                <span className="category-card-copy">
-                  <span className="category-card-title">{category.name}</span>
-                  <span className="category-card-link">Explore all <Icon name="arrow-right" size={15} /></span>
-                </span>
-              </button>
-              <div aria-label={`${category.name} subcategories`} className="category-subcategories">
-                {categorySubcategories.map((subcategory) => (
-                  <button
-                    className="subcategory-link"
-                    key={subcategory.id}
-                    onClick={() => onSelectCategory(subcategory.id)}
-                    type="button"
-                  >
-                    <span className="subcategory-thumb">
-                      <BrandedImage alt="" loading="lazy" src={subcategory.image} fallbackLabel="" />
-                    </span>
-                    <span>{subcategory.name}</span>
-                    <Icon name="arrow-right" size={14} />
-                  </button>
-                ))}
-              </div>
-            </section>
+            <button
+              className="category-card"
+              key={category.id}
+              onClick={() => onSelectCategory(category.id)}
+              type="button"
+            >
+              <BrandedImage alt={`${category.name} jewellery`} fallbackLabel="" loading="lazy" src={category.image} />
+              <span className="category-card-shade" />
+              <span className="category-card-number">0{index + 1}</span>
+              <span className="category-card-copy">
+                <span className="category-card-title">{category.name}</span>
+                <span className="category-card-link">Explore collection <Icon name="arrow-right" size={15} /></span>
+              </span>
+            </button>
           );
         })}
       </div>

@@ -40,8 +40,8 @@ const pageMetadata = {
     description: "View supplied J P Jewellers Rajkot showroom address, opening hours, phone and social contact links.",
   },
   orders: {
-    title: "My Selections | J P Jewellers",
-    description: "View selections saved in this browser. Saved selections are not submitted orders.",
+    title: "My Orders | J P Jewellers",
+    description: "View orders saved in this browser.",
     robots: "noindex, nofollow",
   },
 };
@@ -130,15 +130,13 @@ function validateOrders(value, key) {
   const validOrders = value.filter((order) => (
     order
     && typeof order.id === "string"
-    && typeof order.createdAt === "string"
-    && Number.isFinite(Date.parse(order.createdAt))
+    && typeof (order.createdAt ?? order.date) === "string"
+    && Number.isFinite(Date.parse(order.createdAt ?? order.date))
     && Array.isArray(order.items)
     && order.items.length > 0
     && order.items.every((item) => (
       item
-      && productIds.has(item.id)
-      && typeof item.name === "string"
-      && typeof item.category === "string"
+      && productIds.has(item.id ?? item.productId)
       && Number.isSafeInteger(item.quantity)
       && item.quantity > 0
     ))
@@ -147,23 +145,62 @@ function validateOrders(value, key) {
   if (validOrders.length !== value.length) {
     console.warn(`Ignored ${value.length - validOrders.length} invalid entry(s) in saved ${key} data.`);
   }
-  return validOrders.map(({ id, createdAt, items }) => ({
-    id,
-    createdAt,
-    items: items.map(({ id: productId, name, category, quantity }) => ({
-      id: productId,
-      name,
-      category,
-      quantity,
-    })),
-  }));
+  return validOrders.map((order) => {
+    const customer = order.customer ?? {};
+    const customerDetails = order.customerDetails ?? {};
+    const savedValue = (...values) => values.find((value) => (
+      typeof value === "string" ? value.trim() : value !== undefined && value !== null
+    )) ?? "";
+    const items = order.items.map((item) => {
+      const productId = item.id ?? item.productId;
+      const product = products.find((entry) => entry.id === productId);
+      const quantity = Number.isSafeInteger(item.quantity) && item.quantity > 0 ? item.quantity : 1;
+      return {
+        id: productId,
+        name: item.name ?? product?.name ?? "Saved jewellery piece",
+        category: item.category ?? product?.category ?? "Jewellery",
+        image: item.image ?? product?.image ?? "",
+        price: Number.isFinite(item.price) ? item.price : Number.isFinite(item.itemPrice) ? item.itemPrice : product?.illustrativePrice ?? 0,
+        quantity,
+      };
+    });
+    const calculatedTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return {
+      id: order.id,
+      createdAt: order.createdAt ?? order.date,
+      items,
+      total: Number.isFinite(order.total) ? order.total : Number.isFinite(order.subtotal) ? order.subtotal : calculatedTotal,
+      customer: {
+        fullName: savedValue(customer.fullName, customer.name, customerDetails.fullName, customerDetails.name),
+        mobile: savedValue(customer.mobile, customer.phone, customerDetails.mobile, customerDetails.phone),
+        email: savedValue(customer.email, customerDetails.email),
+        address: savedValue(customer.address, customer.fullAddress, customerDetails.address, customerDetails.fullAddress),
+        city: savedValue(customer.city, customerDetails.city),
+        state: savedValue(customer.state, customerDetails.state),
+        pinCode: savedValue(customer.pinCode, customer.pincode, customerDetails.pinCode, customerDetails.pincode),
+      },
+      paymentStatus: order.paymentStatus ?? "Not processed",
+      deliveryDate: order.deliveryDate ?? order.savedDeliveryDate ?? "",
+    };
+  });
+}
+
+function readOrders() {
+  const currentOrders = readStoredValue("jp-jewellers-orders", validateOrders);
+  const legacyOrders = readStoredValue("jp-jewellers:orders", validateOrders);
+  const seen = new Set();
+  return [...currentOrders, ...legacyOrders].filter((order) => {
+    if (seen.has(order.id)) return false;
+    seen.add(order.id);
+    return true;
+  });
 }
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage);
   const [cart, setCart] = useState(() => readStoredValue("jp-jewellers-cart", validateCart));
   const [wishlist, setWishlist] = useState(() => readStoredValue("jp-jewellers-wishlist", validateWishlist));
-  const [orders, setOrders] = useState(() => readStoredValue("jp-jewellers-orders", validateOrders));
+  const [orders, setOrders] = useState(readOrders);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [panelMode, setPanelMode] = useState(null);
   const [shopCategory, setShopCategory] = useState("");

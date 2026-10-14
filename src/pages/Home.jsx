@@ -28,23 +28,6 @@ export default function Home({ onAddToCart, onOpenProduct, onToggleWishlist, onS
     <div className="home-page">
       <HeroSlider onSelectCategory={onSelectCategory} />
 
-      <section aria-label="Showroom information" className="values-strip">
-        <div>
-          <span className="value-number">I</span>
-          <a href={mapUrl} rel="noreferrer" target="_blank">Palace Road, opp. Ashapura Temple, Rajkot</a>
-        </div>
-        <span className="values-divider" />
-        <div>
-          <span className="value-number">II</span>
-          <span>Mon–Sat · 10 AM–7:30 PM</span>
-        </div>
-        <span className="values-divider" />
-        <div>
-          <span className="value-number">III</span>
-          <a href="tel:+919328591000">+91 93285 91000</a>
-        </div>
-      </section>
-
       <section className="section-block collection-section">
         <div className="section-heading-row">
           <div>

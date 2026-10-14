@@ -7,7 +7,7 @@ const navigation = [
   { id: "categories", label: "Categories" },
   { id: "about", label: "About Us" },
   { id: "contact", label: "Contact Us" },
-  { id: "orders", label: "My Selections" },
+  { id: "orders", label: "My Orders" },
 ];
 
 export default function SiteLayout({
